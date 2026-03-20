@@ -152,14 +152,46 @@ function showView(viewId) {
 ══════════════════════════════════════════════════════ */
 
 /* ── ABRIR MÓDULO ── */
-var frame = document.getElementById('form-frame');
-var container = document.getElementById('form-container');
+function openModulo(key) {
+  State.modulo = key;
 
-if (url && frame) {
-  frame.src = url;
-  container.classList.remove('hidden');
+  var mod = MODULOS[key];
+  var url = CONFIG.FORMS[mod.urlKey] || '';
+
+  /* Topbar */
+  setText('form-eyebrow', mod.eyebrow);
+  setText('form-title',   mod.title);
+
+  /* Reloj */
+  startClock('dt-form');
+
+  /* Chips */
+  renderChips(mod.chips);
+
+  /* IFRAME */
+  var frame = document.getElementById('form-frame');
+  var container = document.getElementById('form-container');
+
+  if (!url || url.trim() === '') {
+    show('state-nourl');
+    hide('state-ready');
+  } else {
+    hide('state-nourl');
+    show('state-ready');
+
+    if (frame) {
+      frame.src = url;
+    }
+
+    if (container) {
+      container.classList.remove('hidden');
+    }
+
+    hide('confirm-card');
+  }
+
+  showView('form');
 }
-
 
 /* ── CHIPS DE REFERENCIA ── */
 function renderChips(chips) {
