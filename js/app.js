@@ -260,15 +260,14 @@ function bindMenu() {
      no necesita JS para abrirse — solo registramos el afterLaunch */
   var link = id('link-launch');
   if (link) {
-    link.addEventListener('click', function(){
+    link.onclick = function(e){
       if (!State.isOnline) {
+        e.preventDefault();
         toast('Sin conexión a internet', 'error');
-        return;
+      } else {
+        setTimeout(afterLaunch, 300);
       }
-      afterLaunch();
-    });
-    /* Touch también */
-    link.addEventListener('touchstart', function(){}, {passive:true});
+    };
   }
 
   /* Confirmación */
