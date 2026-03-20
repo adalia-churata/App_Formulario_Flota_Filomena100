@@ -259,16 +259,20 @@ function bindMenu() {
   /* El botón de abrir formulario ES un <a> en el HTML,
      no necesita JS para abrirse — solo registramos el afterLaunch */
   var link = id('link-launch');
-  if (link) {
-    link.onclick = function(e){
-      if (!State.isOnline) {
-        e.preventDefault();
-        toast('Sin conexión a internet', 'error');
-      } else {
-        setTimeout(afterLaunch, 300);
-      }
-    };
-  }
+  link.addEventListener('click', function(e){
+    if (!State.isOnline) {
+      e.preventDefault();
+      toast('Sin conexión a internet', 'error');
+      return;
+    }
+  });
+
+  // Detectar cuando el usuario vuelve
+  window.addEventListener('focus', function(){
+    if (State.modulo) {
+      show('confirm-card');
+    }
+  });
 
   /* Confirmación */
   bindTap('btn-confirm-yes', confirmSent);
