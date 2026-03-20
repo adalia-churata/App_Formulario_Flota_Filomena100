@@ -52,13 +52,13 @@
 
 <!-- OFFLINE BAR -->
 <div class="offline-bar hidden" id="offline-bar">
-  ⚠ Sin conexión — los formularios necesitan internet para enviar datos a Excel
+  ⚠ Sin conexión — necesitas internet para abrir y enviar los formularios
 </div>
 
 <!-- MAIN -->
 <main id="main-app" class="hidden">
 
-  <!-- ── MENÚ ── -->
+  <!-- ══ MENÚ ══ -->
   <section id="view-menu" class="view active">
 
     <div class="menu-hero">
@@ -79,7 +79,7 @@
         <div class="mod-text">
           <span class="mod-eyebrow">MÓDULO 01</span>
           <span class="mod-name">CONTROL<br>GARITA</span>
-          <span class="mod-desc">Entradas / Salidas · Kilometraje</span>
+          <span class="mod-desc">ID Unidad · Tipo Mov. · KM · Chofer · Destino</span>
         </div>
         <div class="mod-arrow">→</div>
       </button>
@@ -95,14 +95,14 @@
         <div class="mod-text">
           <span class="mod-eyebrow">MÓDULO 02</span>
           <span class="mod-name">CONTROL<br>MAQUINARIA</span>
-          <span class="mod-desc">Horómetros · Retro · Generador</span>
+          <span class="mod-desc">Control Retro · Control Otros Equipos</span>
         </div>
         <div class="mod-arrow">→</div>
       </button>
 
     </div>
 
-    <div class="day-stats" id="day-stats">
+    <div class="day-stats">
       <div class="stat-box">
         <span class="stat-n" id="stat-garita">0</span>
         <span class="stat-l">Garita hoy</span>
@@ -120,12 +120,12 @@
     </div>
 
     <p class="menu-footnote">
-      Datos sincronizados automáticamente en <strong>Excel · OneDrive</strong>
+      Datos guardados automáticamente en <strong>Excel · OneDrive</strong> vía Microsoft Forms
     </p>
 
   </section>
 
-  <!-- ── GARITA ── -->
+  <!-- ══ GARITA ══ -->
   <section id="view-garita" class="view hidden">
 
     <div class="view-hdr">
@@ -140,54 +140,63 @@
 
     <div class="dt-strip" id="dt-garita"></div>
 
-    <div class="form-area">
-      <div class="form-tip">
-        <strong>Fecha y hora:</strong> se registran automáticamente por el sistema. Solo completa los campos del formulario.
+    <div class="launcher-area">
+
+      <div class="fields-ref">
+        <span class="ref-title">Campos del formulario:</span>
+        <div class="ref-chips">
+          <span class="chip chip-req">ID_UNIDAD</span>
+          <span class="chip chip-auto">FECHA/HORA ↻</span>
+          <span class="chip chip-req">TIPO MOV.</span>
+          <span class="chip chip-req">KILOMETRAJE</span>
+          <span class="chip chip-req">CHOFER</span>
+          <span class="chip chip-req">DESTINO</span>
+          <span class="chip chip-opt">OBSERVACIÓN</span>
+        </div>
+        <span class="ref-legend">
+          <span class="chip chip-auto">↻</span> automático &nbsp;
+          <span class="chip chip-opt">gris</span> opcional
+        </span>
       </div>
 
-      <div class="iframe-shell" id="shell-garita">
-        <!-- ESTADO: placeholder (antes de configurar URL) -->
+      <div class="launch-card" id="launch-garita">
+        <!-- Si URL configurada: botón grande de abrir -->
+        <div class="launch-ready hidden" id="ready-garita">
+          <div class="launch-info">
+            <div class="launch-icon">📋</div>
+            <div>
+              <p class="launch-title">Formulario listo</p>
+              <p class="launch-sub">Se abre en el navegador — al enviar, vuelve aquí</p>
+            </div>
+          </div>
+          <button class="btn-open-form" id="open-garita">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            ABRIR FORMULARIO
+          </button>
+          <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
+          <button class="btn-confirm" id="confirm-garita">
+            ✓ Registrado — nuevo formulario
+          </button>
+        </div>
+
+        <!-- Si URL no configurada -->
         <div class="setup-card" id="setup-garita">
           <div class="setup-num">01</div>
           <h3>Formulario no configurado</h3>
-          <p>Abre <code>js/config.js</code> y pega la URL de tu Microsoft Form en <code>FORMS.garita</code></p>
+          <p>Pega la URL de tu Microsoft Form en <code>js/config.js</code> → <code>FORMS.garita</code></p>
           <div class="setup-steps">
-            <div class="step"><span class="step-n">1</span><span>Ve a <strong>Microsoft Forms</strong> y crea el formulario de Garita con los campos indicados</span></div>
-            <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir</strong> → <strong>Copiar vínculo</strong></span></div>
-            <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.garita</code> dentro de <code>js/config.js</code></span></div>
-            <div class="step"><span class="step-n">4</span><span>En la pestaña <strong>Respuestas</strong> → <strong>Abrir en Excel</strong> para vincular con OneDrive</span></div>
+            <div class="step"><span class="step-n">1</span><span>Abre el formulario en <strong>Microsoft Forms</strong></span></div>
+            <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
+            <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.garita</code> en <code>config.js</code></span></div>
           </div>
-          <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">
-            Ir a Microsoft Forms →
-          </a>
+          <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
         </div>
-
-        <!-- ESTADO: iframe activo -->
-        <iframe
-          id="iframe-garita"
-          class="form-iframe hidden"
-          src="about:blank"
-          frameborder="0"
-          allow="camera; microphone"
-          title="Formulario Control Garita">
-        </iframe>
       </div>
-    </div>
 
-    <div class="view-footer">
-      <button class="btn-reload" id="btn-reload-garita">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-        Recargar formulario
-      </button>
-      <button class="btn-new" id="btn-new-garita">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo registro
-      </button>
     </div>
-
   </section>
 
-  <!-- ── MAQUINARIA ── -->
+  <!-- ══ MAQUINARIA ══ -->
   <section id="view-maquinaria" class="view hidden">
 
     <div class="view-hdr">
@@ -202,79 +211,117 @@
 
     <div class="dt-strip" id="dt-maquinaria"></div>
 
-    <!-- Selector de equipo -->
     <div class="equipo-tabs">
       <button class="eq-tab active" id="tab-retro" data-eq="retro">
-        <span>🚜</span> RETROEXCAVADORA
+        <span>🚜</span> CONTROL RETRO
       </button>
       <button class="eq-tab" id="tab-generador" data-eq="generador">
-        <span>⚡</span> GENERADOR
+        <span>⚡</span> CONTROL OTROS
       </button>
     </div>
 
-    <div class="form-area">
-      <div class="form-tip">
-        <strong>Fecha y hora:</strong> automáticas. El ID del equipo ya está preseleccionado en el formulario.
-      </div>
+    <div class="launcher-area">
 
-      <!-- RETRO -->
+      <!-- ── RETRO ── -->
       <div id="panel-retro">
-        <div class="iframe-shell" id="shell-retro">
+        <div class="fields-ref">
+          <span class="ref-title">Campos — Control Retro:</span>
+          <div class="ref-chips">
+            <span class="chip chip-req">ID_UNIDAD</span>
+            <span class="chip chip-auto">FECHA/HORA ↻</span>
+            <span class="chip chip-req">HORÓMETRO</span>
+            <span class="chip chip-req">OPERARIO</span>
+            <span class="chip chip-req">COMBUSTIBLE</span>
+            <span class="chip chip-req">CANTIDAD COM.</span>
+            <span class="chip chip-req">ACTIVIDAD</span>
+          </div>
+          <span class="ref-legend"><span class="chip chip-auto">↻</span> automático</span>
+        </div>
+
+        <div class="launch-card">
+          <div class="launch-ready hidden" id="ready-retro">
+            <div class="launch-info">
+              <div class="launch-icon">🚜</div>
+              <div>
+                <p class="launch-title">Formulario listo</p>
+                <p class="launch-sub">Retroexcavadora — se abre en el navegador</p>
+              </div>
+            </div>
+            <button class="btn-open-form" id="open-retro">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              ABRIR FORMULARIO
+            </button>
+            <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
+            <button class="btn-confirm" id="confirm-retro">
+              ✓ Registrado — nuevo formulario
+            </button>
+          </div>
           <div class="setup-card" id="setup-retro">
             <div class="setup-num">02A</div>
-            <h3>Formulario Retroexcavadora</h3>
-            <p>Pega la URL de tu Microsoft Form en <code>FORMS.retro</code> dentro de <code>js/config.js</code></p>
+            <h3>Formulario Retro no configurado</h3>
+            <p>Pega la URL en <code>FORMS.retro</code> en <code>js/config.js</code></p>
             <div class="setup-steps">
-              <div class="step"><span class="step-n">1</span><span>Crea el formulario de Maquinaria (Retroexcavadora) en Microsoft Forms</span></div>
-              <div class="step"><span class="step-n">2</span><span>Añade campo <strong>ID Equipo</strong> con valor predeterminado <em>RETRO-01</em></span></div>
-              <div class="step"><span class="step-n">3</span><span>Copia el vínculo y pégalo en <code>FORMS.retro</code></span></div>
+              <div class="step"><span class="step-n">1</span><span>Abre el form de <strong>Control Retroexcavadora</strong> en Microsoft Forms</span></div>
+              <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
+              <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.retro</code></span></div>
             </div>
-            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">
-              Ir a Microsoft Forms →
-            </a>
+            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
           </div>
-          <iframe id="iframe-retro" class="form-iframe hidden" src="about:blank" frameborder="0" title="Formulario Retroexcavadora"></iframe>
         </div>
       </div>
 
-      <!-- GENERADOR -->
+      <!-- ── OTROS ── -->
       <div id="panel-generador" class="hidden">
-        <div class="iframe-shell" id="shell-generador">
+        <div class="fields-ref">
+          <span class="ref-title">Campos — Control Otros Equipos:</span>
+          <div class="ref-chips">
+            <span class="chip chip-req">ID_UNIDAD</span>
+            <span class="chip chip-auto">FECHA/HORA ↻</span>
+            <span class="chip chip-req">CANTIDAD GL</span>
+            <span class="chip chip-req">% CI</span>
+            <span class="chip chip-req">% CF</span>
+            <span class="chip chip-req">REGISTRADOR</span>
+          </div>
+          <span class="ref-legend"><span class="chip chip-auto">↻</span> automático</span>
+        </div>
+
+        <div class="launch-card">
+          <div class="launch-ready hidden" id="ready-generador">
+            <div class="launch-info">
+              <div class="launch-icon">⚡</div>
+              <div>
+                <p class="launch-title">Formulario listo</p>
+                <p class="launch-sub">Otros Equipos — se abre en el navegador</p>
+              </div>
+            </div>
+            <button class="btn-open-form" id="open-generador">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              ABRIR FORMULARIO
+            </button>
+            <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
+            <button class="btn-confirm" id="confirm-generador">
+              ✓ Registrado — nuevo formulario
+            </button>
+          </div>
           <div class="setup-card" id="setup-generador">
             <div class="setup-num">02B</div>
-            <h3>Formulario Generador</h3>
-            <p>Pega la URL de tu Microsoft Form en <code>FORMS.generador</code> dentro de <code>js/config.js</code></p>
+            <h3>Formulario Otros no configurado</h3>
+            <p>Pega la URL en <code>FORMS.generador</code> en <code>js/config.js</code></p>
             <div class="setup-steps">
-              <div class="step"><span class="step-n">1</span><span>Crea el formulario de Maquinaria (Generador) en Microsoft Forms</span></div>
-              <div class="step"><span class="step-n">2</span><span>Añade campo <strong>ID Equipo</strong> con valor predeterminado <em>GEN-01</em></span></div>
-              <div class="step"><span class="step-n">3</span><span>Copia el vínculo y pégalo en <code>FORMS.generador</code></span></div>
+              <div class="step"><span class="step-n">1</span><span>Abre el form de <strong>Control Otros Equipos</strong> en Microsoft Forms</span></div>
+              <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
+              <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.generador</code></span></div>
             </div>
-            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">
-              Ir a Microsoft Forms →
-            </a>
+            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
           </div>
-          <iframe id="iframe-generador" class="form-iframe hidden" src="about:blank" frameborder="0" title="Formulario Generador"></iframe>
         </div>
       </div>
 
     </div>
-
-    <div class="view-footer">
-      <button class="btn-reload" id="btn-reload-maq">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-        Recargar formulario
-      </button>
-      <button class="btn-new" id="btn-new-maq">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo registro
-      </button>
-    </div>
-
   </section>
 
 </main>
 
-<!-- TOAST -->
 <div class="toast hidden" id="toast"></div>
 
 <script>

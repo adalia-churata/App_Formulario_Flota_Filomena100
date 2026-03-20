@@ -1,29 +1,38 @@
 /**
- * FILOMENA100 — Service Worker v1.0
- * Permite instalar la app en Android y cachear assets del menú.
- * Los iframes de Microsoft Forms requieren internet para funcionar.
+ * FILOMENA100 — Service Worker v3
+ * Cache seguro: solo archivos que existen garantizados
  */
 
-var CACHE = 'filomena100-v1.0';
+var CACHE = 'filomena100-v3';
+
+/* Solo cacheamos archivos que SIEMPRE existen */
 var ASSETS = [
-  '/index.html',
-  '/css/style.css',
-  '/js/config.js',
-  '/js/app.js',
-  '/manifest.json',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/config.js',
+  './js/app.js',
+  './manifest.json',
 ];
 
-/* ── Instalación: cachear assets ── */
+/* Instalación: addAll con manejo de error por archivo */
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
-      return cache.addAll(ASSETS);
+      /* Intentamos cachear cada archivo individualmente
+         para que un fallo no rompa toda la instalación */
+      var promises = ASSETS.map(function(url) {
+        return cache.add(url).catch(function(err) {
+          console.warn('[SW] No se pudo cachear:', url, err);
+        });
+      });
+      return Promise.all(promises);
     })
   );
   self.skipWaiting();
 });
 
-/* ── Activación: limpiar caches viejos ── */
+/* Activación: limpiar caches viejos */
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
@@ -36,38 +45,44 @@ self.addEventListener('activate', function(e) {
   self.clients.claim();
 });
 
-/* ── Fetch: Network-first para forms, Cache-first para assets ── */
+/* Fetch: Network-first, fallback a cache */
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
 
-  // NUNCA interceptar Microsoft Forms ni Google Fonts
-  if (url.includes('forms.office.com') ||
-      url.includes('forms.microsoft.com') ||
-      url.includes('fonts.googleapis.com') ||
-      url.includes('fonts.gstatic.com') ||
+  /* No interceptar Microsoft Forms, Google Fonts ni externos */
+  if (url.includes('forms.office.com')      ||
+      url.includes('forms.microsoft.com')   ||
+      url.includes('fonts.googleapis.com')  ||
+      url.includes('fonts.gstatic.com')     ||
       url.includes('login.microsoftonline.com')) {
-    return; // pasa directamente a la red
+    return;
   }
 
-  // Assets propios: cache-first con fallback a red
+  /* Solo interceptar GET */
+  if (e.request.method !== 'GET') return;
+
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(e.request).then(function(response) {
-        if (response.ok && e.request.method === 'GET') {
+    fetch(e.request)
+      .then(function(response) {
+        /* Cachear respuesta fresca si es válida */
+        if (response && response.ok) {
           var clone = response.clone();
           caches.open(CACHE).then(function(cache) {
             cache.put(e.request, clone);
           });
         }
         return response;
-      }).catch(function() {
-        // Sin red y sin cache: devolver index.html para navegación
-        if (e.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-        return new Response('', { status: 503 });
-      });
-    })
+      })
+      .catch(function() {
+        /* Sin red: servir desde cache */
+        return caches.match(e.request).then(function(cached) {
+          if (cached) return cached;
+          /* Fallback a index.html para navegación */
+          if (e.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+          return new Response('', { status: 503 });
+        });
+      })
   );
 });
