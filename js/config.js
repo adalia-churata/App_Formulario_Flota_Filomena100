@@ -69,7 +69,7 @@ var CONFIG = {
      *    Obligatorio: No
      *    Descripción: Incidencias, novedades
      */
-    garita: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=w7WvbWQMzUKZktnsKnUAq-hqqmvj9xBLpwkByhDC6o1UMjZTVUQzQkRRWU9IUFA0MU1QWTZQU0Q2Ui4u',   // ← PEGA AQUÍ la URL de tu formulario de Garita
+    garita: 'https://https://forms.office.com/r/vRqmvFJjy0',   // ← PEGA AQUÍ la URL de tu formulario de Garita
 
 
     /**
@@ -112,7 +112,7 @@ var CONFIG = {
      *    Obligatorio: Sí
      *    Opciones:    Excavación / Ralentí-Espera / Traslado / Mantenimiento
      */
-    retro: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=w7WvbWQMzUKZktnsKnUAq-hqqmvj9xBLpwkByhDC6o1UQzNVWTZNT05RSVVCWEJDT01UODFWRkQzRS4u',    // ← PEGA AQUÍ la URL de tu formulario de Retro
+    retro: 'https://forms.office.com/r/iPbq8j4Sd3',    // ← PEGA AQUÍ la URL de tu formulario de Retro
 
 
     /**
@@ -151,7 +151,7 @@ var CONFIG = {
      *    Obligatorio: Sí
      *    Descripción: Nombre de quien hace el registro
      */
-    generador: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=w7WvbWQMzUKZktnsKnUAq-hqqmvj9xBLpwkByhDC6o1UNFM5SlIzWEdDQlNYNTZCNVNSTlQ1U1lPWC4u', // ← PEGA AQUÍ la URL de tu formulario de Otros
+    generador: 'https://forms.office.com/r/V6CSjSqkHL', // ← PEGA AQUÍ la URL de tu formulario de Otros
 
   },
 
