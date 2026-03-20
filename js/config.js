@@ -69,7 +69,7 @@ var CONFIG = {
      *    Obligatorio: No
      *    Descripción: Incidencias, novedades
      */
-    garita: 'https://https://forms.office.com/r/vRqmvFJjy0',   // ← PEGA AQUÍ la URL de tu formulario de Garita
+    garita: 'https://forms.office.com/r/vRqmvFJjy0',   // ← PEGA AQUÍ la URL de tu formulario de Garita
 
 
     /**
