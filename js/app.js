@@ -152,42 +152,14 @@ function showView(viewId) {
 ══════════════════════════════════════════════════════ */
 
 /* ── ABRIR MÓDULO ── */
-function openModulo(key) {
-  State.modulo = key;
-  var mod = MODULOS[key];
-  var url = CONFIG.FORMS[mod.urlKey] || '';
+var frame = document.getElementById('form-frame');
+var container = document.getElementById('form-container');
 
-  /* Topbar */
-  setText('form-eyebrow', mod.eyebrow);
-  setText('form-title',   mod.title);
-
-  /* Reloj en strip */
-  startClock('dt-form');
-
-  /* Chips de campos */
-  renderChips(mod.chips);
-
-  /* Actualizar el <a> del botón con la URL real */
-  var link = id('link-launch');
-  if (link) {
-    link.href = url || '#';
-    /* Icono del módulo */
-    var iconEl = id('launch-mod-icon');
-    if (iconEl) iconEl.textContent = mod.icon;
-  }
-
-  /* Mostrar estado correcto */
-  if (!url || url.trim() === '') {
-    show('state-nourl');
-    hide('state-ready');
-  } else {
-    hide('state-nourl');
-    show('state-ready');
-    hide('confirm-card');
-  }
-
-  showView('form');
+if (url && frame) {
+  frame.src = url;
+  container.classList.remove('hidden');
 }
+
 
 /* ── CHIPS DE REFERENCIA ── */
 function renderChips(chips) {
