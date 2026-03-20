@@ -130,13 +130,13 @@ function setOnline(online) {
 function showView(viewId) {
   document.querySelectorAll('.view').forEach(function(v){
     v.classList.remove('active');
-    v.classList.add('hidden'); // ocultar todos
+    v.classList.add('hidden'); // ocultar todas
   });
 
-  var v = id('view-' + viewId);
+  var v = document.getElementById('view-' + viewId);
   if (v) {
     v.classList.add('active');
-    v.classList.remove('hidden'); // 🔥 CLAVE
+    v.classList.remove('hidden'); // 
   }
 
   window.scrollTo(0,0);
