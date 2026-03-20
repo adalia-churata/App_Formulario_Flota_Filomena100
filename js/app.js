@@ -158,19 +158,13 @@ function openModulo(key) {
   var mod = MODULOS[key];
   var url = CONFIG.FORMS[mod.urlKey] || '';
 
-  /* Topbar */
   setText('form-eyebrow', mod.eyebrow);
   setText('form-title',   mod.title);
 
-  /* Reloj */
   startClock('dt-form');
-
-  /* Chips */
   renderChips(mod.chips);
 
-  /* IFRAME */
   var frame = document.getElementById('form-frame');
-  var container = document.getElementById('form-container');
 
   if (!url || url.trim() === '') {
     show('state-nourl');
@@ -181,10 +175,6 @@ function openModulo(key) {
 
     if (frame) {
       frame.src = url;
-    }
-
-    if (container) {
-      container.classList.remove('hidden');
     }
 
     hide('confirm-card');
@@ -259,60 +249,7 @@ function bumpCounter(key) {
 }
 
 /* ── BIND MENÚ ── */
-function bindMenu() {
-  /* Botones del menú principal — solo navegación, sin window.open */
-  bindTap('btn-garita', function(){ openModulo('garita'); });
-  bindTap('btn-retro',  function(){ openModulo('retro');  });
-  bindTap('btn-otros',  function(){ openModulo('otros');  });
 
-  /* Back */
-  bindTap('btn-back', function(){ showView('menu'); });
-
-  /* El botón de abrir formulario ES un <a> en el HTML,
-     no necesita JS para abrirse — solo registramos el afterLaunch */
-  var link = id('link-launch');
-  link.addEventListener('click', function(e){
-    if (!State.isOnline) {
-      e.preventDefault();
-      toast('Sin conexión a internet', 'error');
-      return;
-    }
-  });
-
-  // Detectar cuando el usuario vuelve
-  window.addEventListener('focus', function(){
-    if (State.modulo) {
-      show('confirm-card');
-    }
-  });
-
-  /* Confirmación */
-  bindTap('btn-confirm-yes', confirmSent);
-  bindTap('btn-confirm-no',  function(){
-    hide('confirm-card');
-    toast('Vuelve a abrir el formulario cuando termines', 'info');
-  });
-
-  /* Success */
-  bindTap('btn-success-menu', function(){ showView('menu'); });
-  bindTap('btn-success-new',  function(){
-    hide('confirm-card');
-    openModulo(State.modulo);
-  });
-
-  /* Nuevo registro desde footer */
-  bindTap('btn-new-reg', function(){
-    hide('confirm-card');
-    /* Simular clic en el <a> */
-    var link = id('link-launch');
-    if (link && link.href && link.href !== '#') {
-      link.click();
-    }
-  });
-
-  /* Reset medianoche */
-  scheduleMidnightReset();
-}
 
 /* bindTap: versión simple sin preventDefault para no bloquear clicks nativos */
 function bindTap(elId, fn) {
