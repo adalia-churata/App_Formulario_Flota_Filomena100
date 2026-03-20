@@ -1,40 +1,79 @@
 /**
- * FILOMENA100 — App v3 (launcher, sin iframes)
- * Microsoft Forms bloquea iframes → abrimos en nueva pestaña
+ * FILOMENA100 — App v4
+ * Fix popup blocker: usa <a href> en lugar de window.open()
+ * Chrome Android bloquea window.open() dentro de touchend+preventDefault
  */
 
+var MODULOS = {
+  garita: {
+    eyebrow: 'MÓDULO 01',
+    title:   'Control Garita',
+    icon:    '🔒',
+    urlKey:  'garita',
+    statKey: 'garita',
+    chips: [
+      { label: 'ID_UNIDAD',    cls: 'chip-req'  },
+      { label: 'FECHA/HORA ↻', cls: 'chip-auto' },
+      { label: 'TIPO MOV.',    cls: 'chip-req'  },
+      { label: 'KILOMETRAJE',  cls: 'chip-req'  },
+      { label: 'CHOFER',       cls: 'chip-req'  },
+      { label: 'DESTINO',      cls: 'chip-req'  },
+      { label: 'OBSERVACIÓN',  cls: 'chip-opt'  },
+    ],
+  },
+  retro: {
+    eyebrow: 'MÓDULO 02',
+    title:   'Control Retro',
+    icon:    '🚜',
+    urlKey:  'retro',
+    statKey: 'retro',
+    chips: [
+      { label: 'ID_UNIDAD',     cls: 'chip-req'  },
+      { label: 'FECHA/HORA ↻',  cls: 'chip-auto' },
+      { label: 'HORÓMETRO',     cls: 'chip-req'  },
+      { label: 'OPERARIO',      cls: 'chip-req'  },
+      { label: 'COMBUSTIBLE',   cls: 'chip-req'  },
+      { label: 'CANTIDAD COM.', cls: 'chip-req'  },
+      { label: 'ACTIVIDAD',     cls: 'chip-req'  },
+    ],
+  },
+  otros: {
+    eyebrow: 'MÓDULO 03',
+    title:   'Control Otros Equipos',
+    icon:    '⚡',
+    urlKey:  'generador',
+    statKey: 'otros',
+    chips: [
+      { label: 'ID_UNIDAD',    cls: 'chip-req'  },
+      { label: 'FECHA/HORA ↻', cls: 'chip-auto' },
+      { label: 'CANTIDAD GL',  cls: 'chip-req'  },
+      { label: '% CI',         cls: 'chip-req'  },
+      { label: '% CF',         cls: 'chip-req'  },
+      { label: 'REGISTRADOR',  cls: 'chip-req'  },
+    ],
+  },
+};
+
 var State = {
-  currentView:   'menu',
-  currentEquipo: 'retro',
-  isOnline:      navigator.onLine,
-  _toast:        null,
+  modulo:   null,
+  isOnline: navigator.onLine,
+  _toast:   null,
 };
 
 /* ── Helpers ── */
-function id(el)     { return document.getElementById(el); }
-function show(elId) { var e = id(elId); if (e) e.classList.remove('hidden'); }
-function hide(elId) { var e = id(elId); if (e) e.classList.add('hidden'); }
-function setText(elId, val) { var e = id(elId); if (e) e.textContent = val; }
-
-function addTap(el, fn) {
-  if (!el) return;
-  var touched = false;
-  el.addEventListener('touchend', function(e) {
-    e.preventDefault(); touched = true; fn();
-    setTimeout(function() { touched = false; }, 400);
-  }, { passive: false });
-  el.addEventListener('click', function() { if (!touched) fn(); });
-}
+function id(el)            { return document.getElementById(el); }
+function show(elId)        { var e=id(elId); if(e) e.classList.remove('hidden'); }
+function hide(elId)        { var e=id(elId); if(e) e.classList.add('hidden'); }
+function setText(elId,val) { var e=id(elId); if(e) e.textContent=val; }
+function pad(n)            { return String(n).padStart(2,'0'); }
 
 function toast(msg, type) {
-  type = type || 'info';
-  var t = id('toast');
-  if (!t) return;
+  var t = id('toast'); if (!t) return;
   t.textContent = msg;
-  t.className = 'toast ' + type;
+  t.className = 'toast ' + (type||'info');
   t.classList.remove('hidden');
   clearTimeout(State._toast);
-  State._toast = setTimeout(function() { t.classList.add('hidden'); }, 3200);
+  State._toast = setTimeout(function(){ t.classList.add('hidden'); }, 3000);
 }
 
 /* ── INIT ── */
@@ -44,172 +83,242 @@ window.addEventListener('DOMContentLoaded', function() {
     show('main-header');
     show('main-app');
     init();
-  }, 2200);
-  window.addEventListener('online',  function() { setOnline(true);  });
-  window.addEventListener('offline', function() { setOnline(false); });
+  }, 2000);
+  window.addEventListener('online',  function(){ setOnline(true);  });
+  window.addEventListener('offline', function(){ setOnline(false); });
 });
 
 function init() {
+  startClock('dt-menu');
   updateHeaderDate();
-  setInterval(updateHeaderDate, 60000);
-  startDatetime('dt-garita');
-  startDatetime('dt-maquinaria');
+  setInterval(updateHeaderDate, 30000);
   updateCounters();
-  checkForms();
-  bindAll();
   setOnline(navigator.onLine);
+  bindMenu();
 }
 
-/* ── FECHA / HORA ── */
-function updateHeaderDate() {
-  var el = id('hdr-date');
-  if (!el) return;
+/* ── RELOJ ── */
+function fmtNow() {
   var now   = new Date();
   var dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
   var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  el.textContent = dias[now.getDay()] + ' ' + now.getDate() + ' ' + meses[now.getMonth()] + ' ' + now.getFullYear();
+  return dias[now.getDay()] + ' ' + now.getDate() + ' ' + meses[now.getMonth()] +
+         ' ' + now.getFullYear() + '  ·  ' +
+         pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
 }
-
-function startDatetime(stripId) {
-  function update() {
-    var el = id(stripId);
-    if (!el) return;
-    var now = new Date();
-    var pad = function(n) { return String(n).padStart(2,'0'); };
-    var dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    el.innerHTML =
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' +
-      dias[now.getDay()] + ' ' + now.getDate() + ' ' + meses[now.getMonth()] + ' ' + now.getFullYear() +
-      ' &nbsp;|&nbsp; ' +
-      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ' +
-      pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()) +
-      ' &nbsp;<span style="font-size:10px;color:#666;letter-spacing:0.06em;">AUTO</span>';
-  }
-  update();
-  setInterval(update, 1000);
+function startClock(elId) {
+  function tick(){ setText(elId, fmtNow()); }
+  tick(); setInterval(tick, 1000);
+}
+function updateHeaderDate() {
+  var now   = new Date();
+  var dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  setText('hdr-date', dias[now.getDay()] + ' ' + now.getDate() + ' ' + meses[now.getMonth()] + ' ' + now.getFullYear());
 }
 
 /* ── RED ── */
 function setOnline(online) {
   State.isOnline = online;
-  var dot   = id('net-dot');
-  var label = id('net-label');
-  var bar   = id('offline-bar');
-  if (dot)   dot.className    = 'net-dot' + (online ? '' : ' offline');
-  if (label) label.textContent = online ? 'Online' : 'Sin red';
-  if (bar)   online ? bar.classList.add('hidden') : bar.classList.remove('hidden');
+  var dot = id('net-dot');
+  if (dot) dot.className = 'net-dot' + (online ? '' : ' offline');
+  setText('net-label', online ? 'Online' : 'Sin red');
+  online ? hide('offline-bar') : show('offline-bar');
 }
 
-/* ── VERIFICAR URLS CONFIGURADAS ── */
-function checkForms() {
-  toggleFormReady('garita',    CONFIG.FORMS.garita);
-  toggleFormReady('retro',     CONFIG.FORMS.retro);
-  toggleFormReady('generador', CONFIG.FORMS.generador);
+/* ── VISTAS ── */
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  var v = id('view-' + viewId);
+  if (v) v.classList.add('active');
+  window.scrollTo(0,0);
 }
 
-function toggleFormReady(name, url) {
-  var ready = id('ready-' + name);
-  var setup = id('setup-' + name);
-  var configured = url && url.trim() !== '';
-  if (ready) configured ? ready.classList.remove('hidden') : ready.classList.add('hidden');
-  if (setup) configured ? setup.classList.add('hidden')    : setup.classList.remove('hidden');
-}
+/* ══════════════════════════════════════════════════════
+   CLAVE DEL FIX:
+   En lugar de window.open() dentro de un event handler
+   (que Chrome Android bloquea como popup), convertimos
+   el botón "ABRIR FORMULARIO" en un <a> real con target="_blank".
+   Los <a> NUNCA son bloqueados por el navegador.
+   El href se actualiza dinámicamente al entrar a cada módulo.
+══════════════════════════════════════════════════════ */
 
-/* ── ABRIR FORMULARIO ── */
-function openForm(url, label) {
+/* ── ABRIR MÓDULO ── */
+function openModulo(key) {
+  State.modulo = key;
+  var mod = MODULOS[key];
+  var url = CONFIG.FORMS[mod.urlKey] || '';
+
+  /* Topbar */
+  setText('form-eyebrow', mod.eyebrow);
+  setText('form-title',   mod.title);
+
+  /* Reloj en strip */
+  startClock('dt-form');
+
+  /* Chips de campos */
+  renderChips(mod.chips);
+
+  /* Actualizar el <a> del botón con la URL real */
+  var link = id('link-launch');
+  if (link) {
+    link.href = url || '#';
+    /* Icono del módulo */
+    var iconEl = id('launch-mod-icon');
+    if (iconEl) iconEl.textContent = mod.icon;
+  }
+
+  /* Mostrar estado correcto */
   if (!url || url.trim() === '') {
-    toast('Configura la URL en js/config.js', 'error');
-    return;
+    show('state-nourl');
+    hide('state-ready');
+  } else {
+    hide('state-nourl');
+    show('state-ready');
+    hide('confirm-card');
   }
-  if (!State.isOnline) {
-    toast('Sin conexión — necesitas internet para abrir el formulario', 'error');
-    return;
-  }
-  window.open(url, '_blank', 'noopener');
-  toast('Formulario abierto — vuelve aquí al terminar', 'info');
+
+  showView('form');
+}
+
+/* ── CHIPS DE REFERENCIA ── */
+function renderChips(chips) {
+  var ref = id('fields-ref');
+  if (!ref) return;
+  var html = '<span class="ref-title">Campos del formulario:</span><div class="ref-chips">';
+  chips.forEach(function(c){
+    html += '<span class="chip ' + c.cls + '">' + c.label + '</span>';
+  });
+  html += '</div>';
+  html += '<span class="ref-legend">'
+        + '<span class="chip chip-auto">↻ automático</span>'
+        + '&nbsp;<span class="chip chip-opt">gris = opcional</span>'
+        + '</span>';
+  ref.innerHTML = html;
+}
+
+/* ── DESPUÉS DE ABRIR EL FORM ── */
+/* El <a> lo abre directamente; mostramos la confirmación
+   cuando el usuario vuelve a la app */
+function afterLaunch() {
+  /* Pequeño delay para que el navegador abra la pestaña primero */
+  setTimeout(function(){ show('confirm-card'); }, 300);
+}
+
+/* ── CONFIRMACIÓN ── */
+function confirmSent() {
+  var mod  = MODULOS[State.modulo];
+  bumpCounter(mod.statKey);
+
+  var now   = new Date();
+  var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var ts    = now.getDate() + ' ' + meses[now.getMonth()] + ' ' + now.getFullYear()
+            + '  ·  ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+  setText('success-sub',  'Guardado en Excel · OneDrive — ' + mod.title);
+  setText('success-meta', ts + '  ·  ' + mod.title);
+  showView('success');
 }
 
 /* ── CONTADORES ── */
+var CKEY = 'filomena_v4_counters';
 function getCounters() {
-  try {
-    var raw = localStorage.getItem(CONFIG.COUNTER_KEY);
-    if (!raw) return { date: '', garita: 0, maq: 0 };
-    return JSON.parse(raw);
-  } catch(e) { return { date: '', garita: 0, maq: 0 }; }
+  try { return JSON.parse(localStorage.getItem(CKEY)) || {date:'',garita:0,retro:0,otros:0}; }
+  catch(e) { return {date:'',garita:0,retro:0,otros:0}; }
 }
 function saveCounters(c) {
-  try { localStorage.setItem(CONFIG.COUNTER_KEY, JSON.stringify(c)); } catch(e) {}
+  try { localStorage.setItem(CKEY, JSON.stringify(c)); } catch(e){}
 }
 function updateCounters() {
   var today = new Date().toISOString().slice(0,10);
   var c = getCounters();
-  if (c.date !== today) { c = { date: today, garita: 0, maq: 0 }; saveCounters(c); }
+  if (c.date !== today) { c = {date:today,garita:0,retro:0,otros:0}; saveCounters(c); }
   setText('stat-garita', c.garita);
-  setText('stat-maq',    c.maq);
-  setText('stat-total',  c.garita + c.maq);
+  setText('stat-retro',  c.retro);
+  setText('stat-otros',  c.otros);
 }
-function bumpCounter(type) {
+function bumpCounter(key) {
   var today = new Date().toISOString().slice(0,10);
   var c = getCounters();
-  if (c.date !== today) c = { date: today, garita: 0, maq: 0 };
-  if (type === 'garita') c.garita++;
-  if (type === 'maq')    c.maq++;
+  if (c.date !== today) c = {date:today,garita:0,retro:0,otros:0};
+  c[key] = (c[key]||0) + 1;
   saveCounters(c);
   updateCounters();
 }
 
-/* ── NAVEGACIÓN ── */
-function showView(viewId) {
-  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
-  var v = id('view-' + viewId);
-  if (v) v.classList.add('active');
-  State.currentView = viewId;
-  window.scrollTo(0, 0);
+/* ── BIND MENÚ ── */
+function bindMenu() {
+  /* Botones del menú principal — solo navegación, sin window.open */
+  bindTap('btn-garita', function(){ openModulo('garita'); });
+  bindTap('btn-retro',  function(){ openModulo('retro');  });
+  bindTap('btn-otros',  function(){ openModulo('otros');  });
+
+  /* Back */
+  bindTap('btn-back', function(){ showView('menu'); });
+
+  /* El botón de abrir formulario ES un <a> en el HTML,
+     no necesita JS para abrirse — solo registramos el afterLaunch */
+  var link = id('link-launch');
+  if (link) {
+    link.addEventListener('click', function(){
+      if (!State.isOnline) {
+        toast('Sin conexión a internet', 'error');
+        return;
+      }
+      afterLaunch();
+    });
+    /* Touch también */
+    link.addEventListener('touchstart', function(){}, {passive:true});
+  }
+
+  /* Confirmación */
+  bindTap('btn-confirm-yes', confirmSent);
+  bindTap('btn-confirm-no',  function(){
+    hide('confirm-card');
+    toast('Vuelve a abrir el formulario cuando termines', 'info');
+  });
+
+  /* Success */
+  bindTap('btn-success-menu', function(){ showView('menu'); });
+  bindTap('btn-success-new',  function(){
+    hide('confirm-card');
+    openModulo(State.modulo);
+  });
+
+  /* Nuevo registro desde footer */
+  bindTap('btn-new-reg', function(){
+    hide('confirm-card');
+    /* Simular clic en el <a> */
+    var link = id('link-launch');
+    if (link && link.href && link.href !== '#') {
+      link.click();
+    }
+  });
+
+  /* Reset medianoche */
+  scheduleMidnightReset();
 }
 
-function switchEquipo(equipo) {
-  State.currentEquipo = equipo;
-  document.querySelectorAll('.eq-tab').forEach(function(t) {
-    t.classList.toggle('active', t.dataset.eq === equipo);
+/* bindTap: versión simple sin preventDefault para no bloquear clicks nativos */
+function bindTap(elId, fn) {
+  var el = id(elId);
+  if (!el) return;
+  var touched = false;
+  el.addEventListener('touchend', function(e){
+    touched = true; fn();
+    setTimeout(function(){ touched=false; }, 400);
+  }, {passive:true});   /* passive:true → NO llama preventDefault → no bloquea */
+  el.addEventListener('click', function(){
+    if (!touched) fn();
   });
-  id('panel-retro').classList.toggle('hidden',     equipo !== 'retro');
-  id('panel-generador').classList.toggle('hidden', equipo !== 'generador');
 }
 
-/* ── BIND ALL ── */
-function bindAll() {
-  // Menú
-  addTap(id('btn-garita'),    function() { showView('garita'); });
-  addTap(id('btn-maquinaria'),function() { showView('maquinaria'); });
-
-  // Back
-  addTap(id('back-garita'),     function() { showView('menu'); });
-  addTap(id('back-maquinaria'), function() { showView('menu'); });
-
-  // Tabs maquinaria
-  addTap(id('tab-retro'),     function() { switchEquipo('retro'); });
-  addTap(id('tab-generador'), function() { switchEquipo('generador'); });
-
-  // Abrir formularios
-  addTap(id('open-garita'),    function() { openForm(CONFIG.FORMS.garita,    'Garita'); });
-  addTap(id('open-retro'),     function() { openForm(CONFIG.FORMS.retro,     'Retro'); });
-  addTap(id('open-generador'), function() { openForm(CONFIG.FORMS.generador, 'Otros'); });
-
-  // Confirmar registro (bump contador + toast)
-  addTap(id('confirm-garita'), function() {
-    bumpCounter('garita');
-    toast('✓ Registro contabilizado', 'success');
-    openForm(CONFIG.FORMS.garita, 'Garita');
-  });
-  addTap(id('confirm-retro'), function() {
-    bumpCounter('maq');
-    toast('✓ Registro contabilizado', 'success');
-    openForm(CONFIG.FORMS.retro, 'Retro');
-  });
-  addTap(id('confirm-generador'), function() {
-    bumpCounter('maq');
-    toast('✓ Registro contabilizado', 'success');
-    openForm(CONFIG.FORMS.generador, 'Otros');
-  });
+function scheduleMidnightReset() {
+  var now = new Date();
+  var midnight = new Date(now);
+  midnight.setHours(24,0,5,0);
+  setTimeout(function(){
+    updateCounters();
+    scheduleMidnightReset();
+  }, midnight - now);
 }

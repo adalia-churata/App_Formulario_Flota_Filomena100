@@ -43,34 +43,32 @@
     </div>
   </div>
   <div class="hdr-right">
-    <div class="net-badge" id="net-badge">
+    <div class="net-badge">
       <span class="net-dot" id="net-dot"></span>
       <span id="net-label">Online</span>
     </div>
   </div>
 </header>
 
-<!-- OFFLINE BAR -->
 <div class="offline-bar hidden" id="offline-bar">
-  ⚠ Sin conexión — necesitas internet para abrir y enviar los formularios
+  ⚠ Sin conexión — los formularios necesitan internet para enviar datos a Excel
 </div>
 
-<!-- MAIN -->
+<!-- APP -->
 <main id="main-app" class="hidden">
 
   <!-- ══ MENÚ ══ -->
   <section id="view-menu" class="view active">
-
     <div class="menu-hero">
-      <h1>¿Qué vas a registrar?</h1>
-      <p>Selecciona el módulo de trabajo</p>
+      <div class="dt-live" id="dt-menu"></div>
+      <h1>Selecciona el módulo</h1>
     </div>
 
     <div class="module-grid">
 
       <button class="mod-btn mod-garita" id="btn-garita">
         <div class="mod-icon">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <rect x="3" y="11" width="18" height="11" rx="2"/>
             <path d="M7 11V7a5 5 0 0110 0v4"/>
             <circle cx="12" cy="16" r="1.5" fill="currentColor" stroke="none"/>
@@ -79,14 +77,14 @@
         <div class="mod-text">
           <span class="mod-eyebrow">MÓDULO 01</span>
           <span class="mod-name">CONTROL<br>GARITA</span>
-          <span class="mod-desc">ID Unidad · Tipo Mov. · KM · Chofer · Destino</span>
+          <span class="mod-desc">Entrada / Salida · KM · Chofer</span>
         </div>
-        <div class="mod-arrow">→</div>
+        <span class="mod-arrow">→</span>
       </button>
 
-      <button class="mod-btn mod-maquinaria" id="btn-maquinaria">
+      <button class="mod-btn mod-retro" id="btn-retro">
         <div class="mod-icon">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <path d="M2 17h20M6 17V9l3-5h6l3 5v8"/>
             <rect x="9" y="13" width="6" height="4" rx="1"/>
             <circle cx="6" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>
@@ -94,10 +92,27 @@
         </div>
         <div class="mod-text">
           <span class="mod-eyebrow">MÓDULO 02</span>
-          <span class="mod-name">CONTROL<br>MAQUINARIA</span>
-          <span class="mod-desc">Control Retro · Control Otros Equipos</span>
+          <span class="mod-name">CONTROL<br>RETRO</span>
+          <span class="mod-desc">Horómetro · Combustible · Actividad</span>
         </div>
-        <div class="mod-arrow">→</div>
+        <span class="mod-arrow">→</span>
+      </button>
+
+      <button class="mod-btn mod-otros" id="btn-otros">
+        <div class="mod-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+            <line x1="10" y1="14" x2="14" y2="14"/>
+          </svg>
+        </div>
+        <div class="mod-text">
+          <span class="mod-eyebrow">MÓDULO 03</span>
+          <span class="mod-name">CONTROL<br>OTROS EQUIPOS</span>
+          <span class="mod-desc">GL · % CI · % CF · Registrador</span>
+        </div>
+        <span class="mod-arrow">→</span>
       </button>
 
     </div>
@@ -109,214 +124,108 @@
       </div>
       <div class="stat-sep"></div>
       <div class="stat-box">
-        <span class="stat-n" id="stat-maq">0</span>
-        <span class="stat-l">Maquinaria hoy</span>
+        <span class="stat-n" id="stat-retro">0</span>
+        <span class="stat-l">Retro hoy</span>
       </div>
       <div class="stat-sep"></div>
       <div class="stat-box">
-        <span class="stat-n" id="stat-total">0</span>
-        <span class="stat-l">Total registros</span>
+        <span class="stat-n" id="stat-otros">0</span>
+        <span class="stat-l">Otros hoy</span>
       </div>
     </div>
 
-    <p class="menu-footnote">
-      Datos guardados automáticamente en <strong>Excel · OneDrive</strong> vía Microsoft Forms
-    </p>
-
+    <p class="menu-footnote">Datos guardados automáticamente en <strong>Excel · OneDrive</strong></p>
   </section>
 
-  <!-- ══ GARITA ══ -->
-  <section id="view-garita" class="view hidden">
+  <!-- ══ VISTA FORMULARIO ══ -->
+  <section id="view-form" class="view hidden">
 
     <div class="view-hdr">
-      <button class="back-btn" id="back-garita">
+      <button class="back-btn" id="btn-back">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       </button>
       <div>
-        <span class="view-eyebrow">MÓDULO 01</span>
-        <h2 class="view-h2">Control Garita</h2>
+        <span class="view-eyebrow" id="form-eyebrow">MÓDULO 01</span>
+        <h2 class="view-h2" id="form-title">Control Garita</h2>
       </div>
     </div>
 
-    <div class="dt-strip" id="dt-garita"></div>
+    <div class="dt-strip" id="dt-form"></div>
 
-    <div class="launcher-area">
+    <div class="fields-ref" id="fields-ref"></div>
 
-      <div class="fields-ref">
-        <span class="ref-title">Campos del formulario:</span>
-        <div class="ref-chips">
-          <span class="chip chip-req">ID_UNIDAD</span>
-          <span class="chip chip-auto">FECHA/HORA ↻</span>
-          <span class="chip chip-req">TIPO MOV.</span>
-          <span class="chip chip-req">KILOMETRAJE</span>
-          <span class="chip chip-req">CHOFER</span>
-          <span class="chip chip-req">DESTINO</span>
-          <span class="chip chip-opt">OBSERVACIÓN</span>
+    <div class="launch-area">
+
+      <!-- Sin URL configurada -->
+      <div id="state-nourl" class="launch-card launch-setup hidden">
+        <div class="setup-num">⚙️</div>
+        <h3>Formulario no configurado</h3>
+        <p>Pega la URL de tu Microsoft Form en <code>js/config.js</code> en el campo correspondiente.</p>
+        <div class="setup-steps">
+          <div class="step"><span class="step-n">1</span><span>Abre el formulario en <strong>Microsoft Forms</strong></span></div>
+          <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir</strong> → copiar enlace de respuesta</span></div>
+          <div class="step"><span class="step-n">3</span><span>Si la URL empieza con <code>forms.cloud.microsoft</code>, cámbiala a <code>forms.office.com</code></span></div>
+          <div class="step"><span class="step-n">4</span><span>Pega en <code>config.js</code> y sube a GitHub</span></div>
         </div>
-        <span class="ref-legend">
-          <span class="chip chip-auto">↻</span> automático &nbsp;
-          <span class="chip chip-opt">gris</span> opcional
-        </span>
+        <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
       </div>
 
-      <div class="launch-card" id="launch-garita">
-        <!-- Si URL configurada: botón grande de abrir -->
-        <div class="launch-ready hidden" id="ready-garita">
-          <div class="launch-info">
-            <div class="launch-icon">📋</div>
-            <div>
-              <p class="launch-title">Formulario listo</p>
-              <p class="launch-sub">Se abre en el navegador — al enviar, vuelve aquí</p>
-            </div>
-          </div>
-          <button class="btn-open-form" id="open-garita">
+      <!-- URL configurada — EL BOTÓN ES UN <a> REAL -->
+      <div id="state-ready" class="hidden">
+        <div class="launch-card launch-ready">
+          <div class="launch-ready-icon" id="launch-mod-icon">🔒</div>
+          <p class="launch-ready-label">Toca para abrir el formulario</p>
+          <p class="launch-ready-sub">Se abrirá en una pestaña nueva.<br>Cuando lo envíes, vuelve aquí y confirma.</p>
+
+          <!--
+            ★ ESTE ES EL FIX PRINCIPAL ★
+            Es un <a> con target="_blank", NO un button con window.open().
+            Chrome Android NUNCA bloquea un <a target="_blank"> tocado por el usuario.
+            El href se actualiza dinámicamente en app.js → openModulo().
+          -->
+          <a id="link-launch"
+             href="#"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="btn-launch">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             ABRIR FORMULARIO
-          </button>
-          <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
-          <button class="btn-confirm" id="confirm-garita">
-            ✓ Registrado — nuevo formulario
-          </button>
+          </a>
         </div>
 
-        <!-- Si URL no configurada -->
-        <div class="setup-card" id="setup-garita">
-          <div class="setup-num">01</div>
-          <h3>Formulario no configurado</h3>
-          <p>Pega la URL de tu Microsoft Form en <code>js/config.js</code> → <code>FORMS.garita</code></p>
-          <div class="setup-steps">
-            <div class="step"><span class="step-n">1</span><span>Abre el formulario en <strong>Microsoft Forms</strong></span></div>
-            <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
-            <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.garita</code> en <code>config.js</code></span></div>
+        <!-- Confirmación (aparece tras abrir el form) -->
+        <div class="confirm-card hidden" id="confirm-card">
+          <p class="confirm-q">¿Enviaste el formulario?</p>
+          <div class="confirm-btns">
+            <button class="btn-confirm-yes" id="btn-confirm-yes">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+              Sí, lo envié
+            </button>
+            <button class="btn-confirm-no" id="btn-confirm-no">Aún no</button>
           </div>
-          <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
         </div>
       </div>
 
     </div>
+
+    <div class="view-footer">
+      <button class="btn-new-full" id="btn-new-reg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo registro
+      </button>
+    </div>
+
   </section>
 
-  <!-- ══ MAQUINARIA ══ -->
-  <section id="view-maquinaria" class="view hidden">
-
-    <div class="view-hdr">
-      <button class="back-btn" id="back-maquinaria">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      </button>
-      <div>
-        <span class="view-eyebrow">MÓDULO 02</span>
-        <h2 class="view-h2">Control Maquinaria</h2>
-      </div>
-    </div>
-
-    <div class="dt-strip" id="dt-maquinaria"></div>
-
-    <div class="equipo-tabs">
-      <button class="eq-tab active" id="tab-retro" data-eq="retro">
-        <span>🚜</span> CONTROL RETRO
-      </button>
-      <button class="eq-tab" id="tab-generador" data-eq="generador">
-        <span>⚡</span> CONTROL OTROS
-      </button>
-    </div>
-
-    <div class="launcher-area">
-
-      <!-- ── RETRO ── -->
-      <div id="panel-retro">
-        <div class="fields-ref">
-          <span class="ref-title">Campos — Control Retro:</span>
-          <div class="ref-chips">
-            <span class="chip chip-req">ID_UNIDAD</span>
-            <span class="chip chip-auto">FECHA/HORA ↻</span>
-            <span class="chip chip-req">HORÓMETRO</span>
-            <span class="chip chip-req">OPERARIO</span>
-            <span class="chip chip-req">COMBUSTIBLE</span>
-            <span class="chip chip-req">CANTIDAD COM.</span>
-            <span class="chip chip-req">ACTIVIDAD</span>
-          </div>
-          <span class="ref-legend"><span class="chip chip-auto">↻</span> automático</span>
-        </div>
-
-        <div class="launch-card">
-          <div class="launch-ready hidden" id="ready-retro">
-            <div class="launch-info">
-              <div class="launch-icon">🚜</div>
-              <div>
-                <p class="launch-title">Formulario listo</p>
-                <p class="launch-sub">Retroexcavadora — se abre en el navegador</p>
-              </div>
-            </div>
-            <button class="btn-open-form" id="open-retro">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              ABRIR FORMULARIO
-            </button>
-            <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
-            <button class="btn-confirm" id="confirm-retro">
-              ✓ Registrado — nuevo formulario
-            </button>
-          </div>
-          <div class="setup-card" id="setup-retro">
-            <div class="setup-num">02A</div>
-            <h3>Formulario Retro no configurado</h3>
-            <p>Pega la URL en <code>FORMS.retro</code> en <code>js/config.js</code></p>
-            <div class="setup-steps">
-              <div class="step"><span class="step-n">1</span><span>Abre el form de <strong>Control Retroexcavadora</strong> en Microsoft Forms</span></div>
-              <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
-              <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.retro</code></span></div>
-            </div>
-            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── OTROS ── -->
-      <div id="panel-generador" class="hidden">
-        <div class="fields-ref">
-          <span class="ref-title">Campos — Control Otros Equipos:</span>
-          <div class="ref-chips">
-            <span class="chip chip-req">ID_UNIDAD</span>
-            <span class="chip chip-auto">FECHA/HORA ↻</span>
-            <span class="chip chip-req">CANTIDAD GL</span>
-            <span class="chip chip-req">% CI</span>
-            <span class="chip chip-req">% CF</span>
-            <span class="chip chip-req">REGISTRADOR</span>
-          </div>
-          <span class="ref-legend"><span class="chip chip-auto">↻</span> automático</span>
-        </div>
-
-        <div class="launch-card">
-          <div class="launch-ready hidden" id="ready-generador">
-            <div class="launch-info">
-              <div class="launch-icon">⚡</div>
-              <div>
-                <p class="launch-title">Formulario listo</p>
-                <p class="launch-sub">Otros Equipos — se abre en el navegador</p>
-              </div>
-            </div>
-            <button class="btn-open-form" id="open-generador">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-              ABRIR FORMULARIO
-            </button>
-            <p class="launch-hint">Toca el botón → llena el formulario → envía → regresa aquí y toca "Registrado ✓"</p>
-            <button class="btn-confirm" id="confirm-generador">
-              ✓ Registrado — nuevo formulario
-            </button>
-          </div>
-          <div class="setup-card" id="setup-generador">
-            <div class="setup-num">02B</div>
-            <h3>Formulario Otros no configurado</h3>
-            <p>Pega la URL en <code>FORMS.generador</code> en <code>js/config.js</code></p>
-            <div class="setup-steps">
-              <div class="step"><span class="step-n">1</span><span>Abre el form de <strong>Control Otros Equipos</strong> en Microsoft Forms</span></div>
-              <div class="step"><span class="step-n">2</span><span>Clic en <strong>Compartir → Copiar vínculo</strong></span></div>
-              <div class="step"><span class="step-n">3</span><span>Pega la URL en <code>FORMS.generador</code></span></div>
-            </div>
-            <a class="btn-goto-forms" href="https://forms.microsoft.com" target="_blank" rel="noopener">Ir a Microsoft Forms →</a>
-          </div>
-        </div>
-      </div>
-
+  <!-- ══ ÉXITO ══ -->
+  <section id="view-success" class="view hidden">
+    <div class="success-wrap">
+      <div class="success-icon">✓</div>
+      <h2 class="success-title">¡Registro guardado!</h2>
+      <p class="success-sub" id="success-sub"></p>
+      <div class="success-meta" id="success-meta"></div>
+      <button class="btn-success-back" id="btn-success-menu">Volver al menú</button>
+      <button class="btn-success-new"  id="btn-success-new">+ Registrar otro</button>
     </div>
   </section>
 
