@@ -128,9 +128,17 @@ function setOnline(online) {
 
 /* ── VISTAS ── */
 function showView(viewId) {
-  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  document.querySelectorAll('.view').forEach(function(v){
+    v.classList.remove('active');
+    v.classList.add('hidden'); // ocultar todos
+  });
+
   var v = id('view-' + viewId);
-  if (v) v.classList.add('active');
+  if (v) {
+    v.classList.add('active');
+    v.classList.remove('hidden'); // 🔥 CLAVE
+  }
+
   window.scrollTo(0,0);
 }
 
