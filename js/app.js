@@ -249,7 +249,42 @@ function bumpCounter(key) {
 }
 
 /* ── BIND MENÚ ── */
+function bindMenu() {
 
+  /* Botones del menú */
+  bindTap('btn-garita', function(){ openModulo('garita'); });
+  bindTap('btn-retro',  function(){ openModulo('retro');  });
+  bindTap('btn-otros',  function(){ openModulo('otros');  });
+
+  /* Botón volver */
+  bindTap('btn-back', function(){ showView('menu'); });
+
+  /* Confirmación */
+  bindTap('btn-confirm-yes', confirmSent);
+  bindTap('btn-confirm-no', function(){
+    hide('confirm-card');
+    toast('Vuelve a abrir el formulario cuando termines', 'info');
+  });
+
+  /* Pantalla éxito */
+  bindTap('btn-success-menu', function(){ showView('menu'); });
+
+  bindTap('btn-success-new', function(){
+    hide('confirm-card');
+    openModulo(State.modulo);
+  });
+
+  /* Nuevo registro */
+  bindTap('btn-new-reg', function(){
+    hide('confirm-card');
+    var frame = document.getElementById('form-frame');
+    if (frame) {
+      frame.src = frame.src; // recarga el formulario
+    }
+  });
+
+  scheduleMidnightReset();
+}
 
 /* bindTap: versión simple sin preventDefault para no bloquear clicks nativos */
 function bindTap(elId, fn) {
